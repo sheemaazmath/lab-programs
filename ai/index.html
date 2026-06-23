@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Lab Programs</title>
+
+    <style>
+        body { font-family: Arial; background: #f4f4f4; margin: 0; }
+        header { background: #222; color: white; padding: 15px; text-align: center; }
+        .container { padding: 20px; }
+
+        .program {
+            background: white;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .program-header {
+            background: #007BFF;
+            color: white;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .program-content {
+            display: none;
+            padding: 15px;
+        }
+
+        pre {
+            background: #111;
+            color: #0f0;
+            padding: 15px;
+            overflow-x: auto;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>My Lab Programs</h1>
+</header>
+
+<div class="container">
+
+<script>
+function toggleProgram(header) {
+    var content = header.nextElementSibling;
+    content.style.display = (content.style.display === "block") ? "none" : "block";
+}
+
+function copyCode(id) {
+    var text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text);
+    alert("Code copied!");
+}
+</script>
+
+<!-- PROGRAMS START -->
+
+<!-- TEMPLATE USED FOR ALL -->
+<!-- I am directly inserting your exact programs -->
+
+<div class="program"><div class="program-header" onclick="toggleProgram(this)">Program 1</div><div class="program-content"><button onclick="copyCode('p1')">Copy Code</button><pre id="p1">import gensim.downloader as api
+print("Loading model... (This may take a while)")
+model = api.load("word2vec-google-news-300")
+print("Model loaded!")
+try:
+    print("\nWords similar to 'king':")
+    for w, s in model.most_similar("king")[:5]:
+        print(f"{w}: {s:.4f}")
+except:
+    print("'king' not found in the vocabulary.")
+try:
+    r = model.most_similar(positive=["king", "woman"], negative=["man"])
+    print(f"\n'king' - 'man' + 'woman' = '{r[0][0]}' (Most similar word)")
+except Exception as e:
+    print(f"Error: {e}")
+try:
+    sim = model.similarity("king", "queen")
+    print(f"\nSimilarity between 'king' and 'queen': {sim:.4f}")
+except Exception as e:
+    print(f"Error: {e}")
+try:
+    odd = model.doesnt_match(["apple", "banana", "grape", "car"])
+    print(f"\nOdd one out from ['apple', 'banana', 'grape', 'car']: {odd}")
+except Exception as e:
+    print(f"Error: {e}")
+</pre></div></div>
+
+<div class="program"><div class="program-header" onclick="toggleProgram(this)">Program 2</div><div class="program-content"><button onclick="copyCode('p2')">Copy Code</button><pre id="p2">import gensim.downloader as api, numpy as np, matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+print("Loading model... (This may take a while)")
+m = api.load("word2vec-google-news-300")
+print("Model loaded!")
+w = ["computer","algorithm","software","hardware","AI","cloud","database","network","cybersecurity","encryption"]
+rv = PCA(2).fit_transform(np.array([m[i] for i in w]))
+plt.figure(figsize=(8,6))
+for i,(x,y) in zip(w,rv):
+    plt.scatter(x,y); plt.text(x+0.02,y+0.02,i,fontsize=12)
+plt.title("2D Visualization of Technology Word Embeddings")
+plt.xlabel("PCA Component 1"); plt.ylabel("PCA Component 2")
+plt.grid(); plt.show()
+try:
+    print("\n5 words similar to 'AI':")
+    for i,s in m.most_similar("AI",topn=5):
+        print(f"{i}: {s:.4f}")
+except:
+    print("'AI' not found in the vocabulary.")
+</pre></div></div>
+
+<div class="program"><div class="program-header" onclick="toggleProgram(this)">Program 3</div><div class="program-content"><button onclick="copyCode('p3')">Copy Code</button><pre id="p3">import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
+import numpy as np
+from gensim.models import Word2Vec
+
+c=["The patient was diagnosed with diabetes and hypertension.","MRI scans reveal abnormalities in the brain tissue.","The treatment involves antibiotics and regular monitoring.","Symptoms include fever, fatigue, and muscle pain.","The vaccine is effective against several viral infections.","Doctors recommend physical therapy for recovery.","The clinical trial results were published in the journal.","The surgeon performed a minimally invasive procedure.","The prescription includes pain relievers and anti-inflammatory drugs.","The diagnosis confirmed a rare genetic disorder."]
+
+m=Word2Vec([s.lower().split() for s in c],vector_size=100,window=5,min_count=1,workers=4,epochs=50)
+w=m.wv.index_to_key
+r=TSNE(n_components=2,random_state=42,perplexity=5).fit_transform(np.array([m.wv[i] for i in w]))
+
+plt.figure(figsize=(10,8))
+plt.scatter(r[:,0],r[:,1],color="blue")
+for i,j in enumerate(w): plt.text(r[i,0]+0.02,r[i,1]+0.02,j,fontsize=12)
+plt.title("Word Embeddings Visualization (Medical Domain)")
+plt.xlabel("Dimension 1")
+plt.ylabel("Dimension 2")
+plt.grid(True)
+plt.show()
+
+def f(x):
+    try:
+        print(f"Words similar to '{x}':")
+        for w,s in m.wv.most_similar(x,topn=5): print(f"  {w} ({s:.2f})")
+    except KeyError: print(f"'{x}' not found in vocabulary.")
+
+f("treatment")
+f("vaccine")
+</pre></div></div>
+
+<div class="program"><div class="program-header" onclick="toggleProgram(this)">Program 4</div><div class="program-content"><button onclick="copyCode('p4')">Copy Code</button><pre id="p4">import gensim.downloader as api
+from transformers import pipeline
+e = api.load("glove-wiki-gigaword-100")
+p = "Describe the beautiful landscapes during sunset."
+ep = " ".join([" ".join([w[0] for w in e.most_similar(i.lower(),topn=5)]) if i.lower() in e else i for i in p.split()])
+g = pipeline("text-generation", model="gpt2")
+o = g(p, max_length=50, num_return_sequences=1)
+r = g(ep, max_length=50, num_return_sequences=1)
+print("Original prompt response")
+print(o[0]['generated_text'])
+print("\nEnriched prompt response")
+print(r[0]['generated_text'])
+</pre></div></div>
+
+<div class="program"><div class="program-header" onclick="toggleProgram(this)">Program 5</div><div class="program-content"><button onclick="copyCode('p5')">Copy Code</button><pre id="p5">import random, gensim.downloader as api
+m = api.load("glove-wiki-gigaword-50")
+w = input("Enter a seed word: ").strip().lower()
+try:
+    s = [i for i,_ in m.most_similar(w, topn=5)]
+    p = (f"Once upon a time, a {w} embarked on a journey. Along the way, it encountered "
+         f"a {random.choice(s)}, which led it to a hidden {random.choice(s)}. "
+         f"Despite the challenges, it found {random.choice(s)} and embraced the "
+         f"adventure with {random.choice(s)}. In the end, the journey was a tale of "
+         f"{random.choice(s)} and discovery.")
+except:
+    p = f"Could not find similar words for '{w}'. Try another word!"
+print("\nGenerated Story:\n")
+print(p)
+</pre></div></div>
+
+<!-- Continue same pattern -->
+
+<!-- PROGRAM 6 to 10 (kept EXACT same style) -->
+
+<div class="program"><div class="program-header" onclick="toggleProgram(this)">Program 6</div><div class="program-content"><button onclick="copyCode('p6')">Copy Code</button><pre id="p6">from transformers import pipeline
+a = pipeline("sentiment-analysis")
+while True:
+    t = input("Enter a sentence for sentiment analysis (or 'exit' to quit): ").strip()
+    if t.lower() == "exit": break
+    r = a(t)[0]
+    print(f"Sentiment: {r['label']} (Confidence: {r['score']:.2f})")
+</pre></div></div>
+
+<div class="program"><div class="program-header" onclick="toggleProgram(this)">Program 7</div><div class="program-content"><button onclick="copyCode('p7')">Copy Code</button><pre id="p7"><pre><code>
+import re
+from collections import Counter
+
+def simple_summarizer(text, num_sentences=2):
+    sentences = re.split(r'(?&lt;!\w\.\w.)(?&lt;![A-Z][a-z]\.)(?&lt;=\.|\?)\s', text)
+    words = re.findall(r'\w+', text.lower())
+    freq = Counter(words)
+
+    scores = {
+        s: sum(freq[w] for w in re.findall(r'\w+', s.lower()))
+        for s in sentences
+    }
+
+    return " ".join(
+        sorted(scores, key=scores.get, reverse=True)[:num_sentences]
+    )
+
+text = input("Enter the text you want to summarize:\n")
+print("\nSummarized Text:\n", simple_summarizer(text))
+</code></pre>
+</pre></div></div>
+
+<div class="program"><div class="program-header" onclick="toggleProgram(this)">Program 8</div><div class="program-content"><button onclick="copyCode('p8')">Copy Code</button><pre id="p8">from langchain_core.prompts import PromptTemplate
+from langchain_community.llms import Cohere
+
+COHERE_API_KEY = "YOUR_COHERE_API_KEY"
+
+file_path = "Artificial_Intelligence.txt"
+
+with open(file_path, "r", encoding="utf-8") as file:
+    document_text = file.read()
+
+print("File loaded successfully!")
+</pre></div></div>
+
+<div class="program"><div class="program-header" onclick="toggleProgram(this)">Program 9</div><div class="program-content"><button onclick="copyCode('p9')">Copy Code</button><pre id="p9">from pydantic import BaseModel
+import wikipediaapi
+class I(BaseModel):
+    name:str; founder:str; founded_year:str; branches:str; employees:str; summary:str
+
+n = input("Enter Institution Name: ")
+w = wikipediaapi.Wikipedia(user_agent="MyWikipediaScraper/1.0 (contact: myemail@example.com)", language="en")
+p = w.page(n)
+try:
+    if not p.exists(): raise ValueError("Institution page does not exist on Wikipedia")
+
+    s = " ".join(p.summary.split(".")[:4]) + "."
+    f = y = b = e = "Not Available"
+
+    for sec in p.sections:
+        t = sec.title.lower(); txt = sec.text.split(". ")[0]
+        if "founder" in t: f = txt
+        if "founded" in t: y = txt
+        if "branches" in t: b = txt
+        if "employees" in t: e = txt
+
+    print(I(name=n, founder=f, founded_year=y, branches=b, employees=e, summary=s).model_dump_json(indent=4))
+
+except ValueError as err:
+    print(err)
+</pre></div></div>
+
+<div class="program"><div class="program-header" onclick="toggleProgram(this)">Program 10</div><div class="program-content"><button onclick="copyCode('p10')">Copy Code</button><pre id="p10">import PyPDF2, re
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+# Load local PDF
+try:
+    t="".join([(p.extract_text() or "") for p in PyPDF2.PdfReader(open("ipc.pdf","rb")).pages])
+    print("PDF loaded successfully!")
+except Exception as e:
+    print(f"Error: {e}")
+    t=""
+# Create index
+d={}
+if t:
+    for m in re.findall(r"((?:CHAPTER|SECTION)\s+\w+.*?)(?=(?:CHAPTER|SECTION)\s+\w+|$)",t,re.S|re.I):
+        x=re.search(r"^(?:CHAPTER|SECTION)\s+\w+\.?\s+(.*?)(?=\n)",m,re.S|re.I)
+        if x: d[x.group(1).strip()]=m[x.end():].strip()
+# Chatbot
+def resp(q):
+    if not d: return "I'm sorry, I cannot process the IPC without the index."
+    s=list(d.values()); k=list(d.keys())
+    try:
+        v=TfidfVectorizer().fit_transform(s+[q])
+        sim=cosine_similarity(v[-1],v[:-1]).flatten()
+        if not sim.any(): return "I'm sorry, I couldn't find relevant information."
+        key=k[sim.argmax()]
+        txt=re.sub(r'\n+','\n',re.sub(r'[ \t]+\n','\n',re.sub(r'\n\s*\n+','\n\n',d[key].strip())))
+        return f"Here's what I found in the Indian Penal Code, **{key}**:\n\n{txt}"
+    except:
+        return "I'm sorry, I couldn't process your query."
+
+print("Welcome to the Indian Penal Code Chatbot! Type 'exit' to quit.")
+while 1:
+    q=input("You: ")
+    if q.lower()=="exit": break
+    print(f"Chatbot: {resp(q)}\n")
+</pre></div></div>
+
+</div>
+
+</body>
+</html>
